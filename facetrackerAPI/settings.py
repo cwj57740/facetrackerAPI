@@ -151,3 +151,11 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
+
+# redis session
+SESSION_ENGINE = 'redis_sessions.session'
+SESSION_REDIS_HOST = 'localhost'
+SESSION_REDIS_PORT = 6379
+SESSION_REDIS_PASSWORD = ''
+SESSION_REDIS_DB = 2
+SESSION_REDIS_PREFIX = 'session'
