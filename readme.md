@@ -4,6 +4,8 @@
 
 修改api/views.py中FILE_PATH为图片路径
 
+在facetrackerAPI目录下执行git clone https://github.com/AlongWY/FaceGen.git
+
 执行`python manage.py runserver`开启服务器
 
 开启redis(windows为powershell下执行./redis-server.exe)
