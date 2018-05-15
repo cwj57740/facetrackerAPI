@@ -1,6 +1,6 @@
 # FaceTracker backend api
 ### environment:python 3.6.5, [redis 3.2](https://redis.io/download) ([windows-redis](https://github.com/MicrosoftArchive/redis/releases))
-`pip install django==1.11.13,django-cors-headers,requests,django-redis-sessions`
+`pip install django==1.11.13,django-cors-headers,requests,django-redis-sessions,chainer,opencv-python`
 
 修改api/views.py中FILE_PATH为图片路径
 
