@@ -9,8 +9,8 @@
 开启redis(windows为powershell下执行./redis-server.exe)
 
 
-| 接口                    | 参数     | 方法 | 结果     |
-| ----------------------- | -------- | ---- | -------- |
-| /api/get_base_features/ | img:图片 | post | landmark |
-|                         |          |      |          |
-|                         |          |      |          |
+| 接口                    | 参数                | 方法 | 结果     |
+| ----------------------- | -----------------  | ---- | -------- |
+| /api/get_base_features/ | img:图片           | post | landmark |
+| /api/get_average_face/  | json_str:json数据  | post | 平均脸图片|
+|                         |                    |      |          |
