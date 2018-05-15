@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import os
-import requests
+
 import time
-import json
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from FaceGen import *
+from FaceGen.face_features import *
 
 API_KEY = 'WRg5cwms3We9MiZV9CHaJZH53kc30VFI'
 API_SECRET = 'a1S4bXBNjNZWHFAJRZUclUuYuaIV-aps'
@@ -25,6 +23,8 @@ def get_base_features(request):
         img = request.FILES.get("img", None)
         if not img:
             return JsonResponse({"msg": "no img upload"})
+    else:
+        return JsonResponse({"msg": "method is not allowed "})
     file_name = str(int(time.time()))
     ext = os.path.splitext(img.name)[1]
     img_path = os.path.join(FILE_PATH, file_name+ext)
@@ -37,12 +37,38 @@ def get_base_features(request):
 
     if ip not in request.session:
         value = {"img_path": img_path}
-        request.session["ip"] = value
+        request.session[ip] = value
     else:
-        request.session["ip"]["img_path"] = img_path
+        request.session[ip]["img_path"] = img_path
 
     json_str = json.dumps(r)
     return HttpResponse(json_str)
+
+
+@csrf_exempt
+def get_average_face(request):
+    ip = get_ip(request)
+    if request.method == "POST":
+        if "json_str" in request.POST:
+            json_str = request.POST["json_str"]
+        else:
+            return JsonResponse({"msg": "no json"})
+    else:
+        return JsonResponse({"msg": "method is not allowed "})
+    if ip not in request.session:
+        return JsonResponse({"msg": "use get_base_features first"})
+    img_path = request.session[ip]["img_path"]
+
+    image = cv2.imread(img_path)
+    image = convert(image)
+    json_object = json.loads(json_str)
+    result = gen_src(image, json_object)
+    result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+    file_name = str(int(time.time()))
+    ext = ".png"
+    stick_pic_path = img_path = os.path.join(FILE_PATH, file_name+ext)
+    cv2.imwrite(stick_pic_path, result)
+    return HttpResponse("good")
 
 
 def get_ip(request):
