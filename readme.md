@@ -14,5 +14,5 @@
 | 接口                    | 参数                | 方法 | 结果     |
 | ----------------------- | -----------------  | ---- | -------- |
 | /api/get_base_features/ | img:图片           | post | landmark |
-| /api/get_average_face/  | json_str:json数据  | post | 平均脸图片|
-|                         |                    |      |          |
+| /api/get_stick_pic/     | json_str:json数据  | post | 简笔画图片|
+| /api/get_average_face/  |                    | get  | 平均脸图片|
