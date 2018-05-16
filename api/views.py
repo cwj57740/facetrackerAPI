@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
-
+import cv2
+import json
+import os
 import time
+
+import requests
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from FaceGen.face_features import *
-from FaceGen.PixMain import *
+
+from FaceGen import face_features
+from FaceGen import PixMain
+from FaceGen import StarMain
 
 API_KEY = 'WRg5cwms3We9MiZV9CHaJZH53kc30VFI'
 API_SECRET = 'a1S4bXBNjNZWHFAJRZUclUuYuaIV-aps'
@@ -46,9 +52,8 @@ def get_base_features(request):
     return HttpResponse(json_str)
 
 
-
 @csrf_exempt
-def get_average_face(request):
+def get_stick_pic(request):
     if request.method == "POST":
         if "json_str" in request.POST:
             json_str = request.POST["json_str"]
@@ -60,27 +65,64 @@ def get_average_face(request):
         return JsonResponse({"msg": "use get_base_features first"})
     img_path = request.session["img_path"]
     print("img_path:"+img_path)
-
+    img_path = request.session["img_path"]
     image = cv2.imread(img_path)
-    image = convert(image)
+    image = face_features.convert(image)
     json_object = json.loads(json_str)
-    result = gen_src(image, json_object)
+    result = face_features.gen_src(image, json_object)
     result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
     file_name = str(int(time.time()))
     ext = ".png"
-    stick_pic_path = os.path.join(FILE_PATH, file_name+ext)
+    stick_pic_path = os.path.join(FILE_PATH, file_name + ext)
     cv2.imwrite(stick_pic_path, result)
-    print("stick_pic_path",stick_pic_path)
+    print("stick_pic_path", stick_pic_path)
+    request.session["stick_pic_path"] = stick_pic_path
 
-    stick_image = Image.open(stick_pic_path)
-    stick_image = preprocess_img(stick_image, crop_to=256, resize_to=256, P=True)
+    image_data = open(stick_pic_path, "rb").read()
+    return HttpResponse(image_data, content_type="image/png")
 
-    gen_image = get_generator(enc_model="FaceGen/model/pix_enc.npz", dec_model="FaceGen/model/pix_dec.npz")
+
+@csrf_exempt
+def get_average_face(request):
+    if "stick_pic_path" not in request.session:
+        return JsonResponse({"msg": "use get_stick_pic first"})
+    stick_pic_path = request.session["stick_pic_path"]
+    print("stick_pic_path:"+stick_pic_path)
+
+    stick_image = PixMain.Image.open(stick_pic_path)
+    stick_image = PixMain.preprocess_img(stick_image, crop_to=256, resize_to=256, P=True)
+
+    gen_image = PixMain.get_generator(enc_model="FaceGen/model/pix_enc.npz", dec_model="FaceGen/model/pix_dec.npz")
     name = str(int(time.time()))
     gen_image(stick_image, FILE_PATH, name)
     average_face_path = FILE_PATH + '\image_{}_{}.png'.format(name, "pix")
     print("average_face_path:"+average_face_path)
 
+    request.session["average_face_path"] = average_face_path
+
     image_data = open(average_face_path, "rb").read()
     return HttpResponse(image_data, content_type="image/png")
 
+
+@csrf_exempt
+def change_features(request):
+    if request.method == "POST":
+        if "list" in request.POST:
+            list = request.POST["list"]
+        else:
+            return JsonResponse({"msg": "no list"})
+    else:
+        return JsonResponse({"msg": "method is not allowed "})
+    if "average_face_path" not in request.session:
+        return JsonResponse({"msg": "use get_average_face first"})
+    average_face_path = request.session["average_face_path"]
+
+    # list = json.loads(list)
+    #
+    # gen_image = StarMain.get_generator(model_path="FaceGen/model/star_gen.npz")
+    # image = StarMain.Image.open(average_face_path)
+    # image = StarMain.preprocess_img(image)
+    #
+    # for i in range(5):
+    #     image = gen_image(image, list, "Test", name=i)
+    #     image = StarMain.transpose(image)
