@@ -19,7 +19,7 @@ URL = 'https://api-cn.faceplusplus.com/facepp/v3/detect?api_key=%s&api_secret=%s
       'return_attributes=gender,age,eyestatus,emotion,ethnicity,beauty,skinstatus' \
       '&return_landmark=%d' \
       % (API_KEY, API_SECRET, 2)
-FILE_PATH = "E:\webroot"
+FILE_PATH = "./api/static/pictures"
 
 
 @csrf_exempt
@@ -78,9 +78,11 @@ def get_stick_pic(request):
     print("stick_pic_path", stick_pic_path)
     request.session["stick_pic_path"] = stick_pic_path
 
-    image_data = open(stick_pic_path, "rb").read()
-    return HttpResponse(image_data, content_type="image/png")
+    # image_data = open(stick_pic_path, "rb").read()
+    # return HttpResponse(image_data, content_type="image/png")
 
+    request.session["img_path"] = img_path
+    return HttpResponse(json_str)
 
 @csrf_exempt
 def get_average_face(request):
