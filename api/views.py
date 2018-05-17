@@ -9,6 +9,8 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from PIL import Image
+
 from FaceGen import face_features
 from FaceGen import PixMain
 from FaceGen import StarMain
@@ -19,7 +21,7 @@ URL = 'https://api-cn.faceplusplus.com/facepp/v3/detect?api_key=%s&api_secret=%s
       'return_attributes=gender,age,eyestatus,emotion,ethnicity,beauty,skinstatus' \
       '&return_landmark=%d' \
       % (API_KEY, API_SECRET, 2)
-FILE_PATH = "./api/static/pictures"
+FILE_PATH = "E:\webroot"
 
 
 @csrf_exempt
@@ -32,7 +34,7 @@ def get_base_features(request):
     else:
         return JsonResponse({"msg": "method is not allowed "})
     file_name = img
-    ext = ".png"
+    ext = ".jpg"
     img_path = os.path.join(FILE_PATH, file_name+ext)
     # destination = open(img_path, 'wb+')
     # for chunk in img.chunks():  # 分块写入文件
@@ -82,8 +84,23 @@ def get_stick_pic(request):
     # image_data = open(stick_pic_path, "rb").read()
     # return HttpResponse(image_data, content_type="image/png")
 
-    data = {"image_path": file_name + ext}
+    # 简笔画透明化
+    img = Image.open(stick_pic_path)
+    img = img.convert("RGBA")
+    data = img.getdata()
+    new_Data = list()
+    for item in data:
+        if item[0] > 220 and item[1] > 220 and item[2] > 220:
+            new_Data.append((255, 255, 255, 0))
+        else:
+            new_Data.append(item)
+    transparent_stick_pic = os.path.join(FILE_PATH, str(int(time.time())) + ext)
+    img.putdata(new_Data)
+    img.save(transparent_stick_pic, "PNG")
+
+    data = {"image_path": transparent_stick_pic}
     return HttpResponse(json.dumps(data))
+
 
 @csrf_exempt
 def get_average_face(request):
