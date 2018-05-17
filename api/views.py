@@ -21,7 +21,7 @@ URL = 'https://api-cn.faceplusplus.com/facepp/v3/detect?api_key=%s&api_secret=%s
       'return_attributes=gender,age,eyestatus,emotion,ethnicity,beauty,skinstatus' \
       '&return_landmark=%d' \
       % (API_KEY, API_SECRET, 2)
-FILE_PATH = "E:\webroot"
+FILE_PATH = "./api/static/pictures"
 
 
 @csrf_exempt
@@ -94,11 +94,12 @@ def get_stick_pic(request):
             new_Data.append((255, 255, 255, 0))
         else:
             new_Data.append(item)
-    transparent_stick_pic = os.path.join(FILE_PATH, str(int(time.time())) + ext)
+    img_name = str(int(time.time())) + ext
+    transparent_stick_pic = os.path.join(FILE_PATH, img_name)
     img.putdata(new_Data)
     img.save(transparent_stick_pic, "PNG")
 
-    data = {"image_path": transparent_stick_pic}
+    data = {"image_path": img_name}
     return HttpResponse(json.dumps(data))
 
 
