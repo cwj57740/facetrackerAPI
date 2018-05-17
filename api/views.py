@@ -81,8 +81,8 @@ def get_stick_pic(request):
     # image_data = open(stick_pic_path, "rb").read()
     # return HttpResponse(image_data, content_type="image/png")
 
-    request.session["img_path"] = img_path
-    return HttpResponse(json_str)
+    data = {"image_path": file_name + ext}
+    return HttpResponse(json.dumps(data))
 
 @csrf_exempt
 def get_average_face(request):
@@ -97,13 +97,20 @@ def get_average_face(request):
     gen_image = PixMain.get_generator(enc_model="FaceGen/model/pix_enc.npz", dec_model="FaceGen/model/pix_dec.npz")
     name = str(int(time.time()))
     gen_image(stick_image, FILE_PATH, name)
-    average_face_path = FILE_PATH + '\image_{}_{}.png'.format(name, "pix")
+    path = 'image_{}_{}.png'.format(name, "pix")
+    average_face_path = FILE_PATH + '\\' + path
+    # average_face_path = FILE_PATH + '\image_{}_{}.png'.format(name, "pix")
     print("average_face_path:"+average_face_path)
 
     request.session["average_face_path"] = average_face_path
 
-    image_data = open(average_face_path, "rb").read()
-    return HttpResponse(image_data, content_type="image/png")
+    # image_data = open(average_face_path, "rb").read()
+    # return HttpResponse(image_data, content_type="image/png")
+
+    print(path)
+
+    data = {"image_path": path}
+    return HttpResponse(json.dumps(data))
 
 
 @csrf_exempt
