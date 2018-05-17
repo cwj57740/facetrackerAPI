@@ -32,7 +32,7 @@ def get_base_features(request):
     else:
         return JsonResponse({"msg": "method is not allowed "})
     file_name = img
-    ext = os.path.splitext(img.name)[1]
+    ext = ".png"
     img_path = os.path.join(FILE_PATH, file_name+ext)
     # destination = open(img_path, 'wb+')
     # for chunk in img.chunks():  # 分块写入文件
