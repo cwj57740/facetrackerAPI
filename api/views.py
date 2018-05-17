@@ -25,18 +25,19 @@ FILE_PATH = "./api/static/pictures"
 @csrf_exempt
 def get_base_features(request):
     if request.method == "POST":
-        img = request.FILES.get("img", None)
-        if not img:
+        if "img" in request.POST:
+            img = request.POST["img"]
+        else:
             return JsonResponse({"msg": "no img upload"})
     else:
         return JsonResponse({"msg": "method is not allowed "})
-    file_name = str(int(time.time()))
+    file_name = img
     ext = os.path.splitext(img.name)[1]
     img_path = os.path.join(FILE_PATH, file_name+ext)
-    destination = open(img_path, 'wb+')
-    for chunk in img.chunks():  # 分块写入文件
-        destination.write(chunk)
-    destination.close()
+    # destination = open(img_path, 'wb+')
+    # for chunk in img.chunks():  # 分块写入文件
+    #     destination.write(chunk)
+    # destination.close()
     files = {'image_file': open(img_path, 'rb')}
     json_str = "null"
     t = 0
