@@ -21,7 +21,7 @@ URL = 'https://api-cn.faceplusplus.com/facepp/v3/detect?api_key=%s&api_secret=%s
       'return_attributes=gender,age,eyestatus,emotion,ethnicity,beauty,skinstatus' \
       '&return_landmark=%d' \
       % (API_KEY, API_SECRET, 2)
-FILE_PATH = "./api/static/pictures"
+FILE_PATH = "E:\webroot"
 
 
 @csrf_exempt
