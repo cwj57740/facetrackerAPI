@@ -34,7 +34,7 @@ def get_base_features(request):
     else:
         return JsonResponse({"msg": "method is not allowed "})
     file_name = img
-    ext = ".jpg"
+    ext = ".png"
     img_path = os.path.join(FILE_PATH, file_name+ext)
     # destination = open(img_path, 'wb+')
     # for chunk in img.chunks():  # 分块写入文件
@@ -135,7 +135,7 @@ def get_average_face(request):
 def change_features(request):
     if request.method == "POST":
         if "list" in request.POST:
-            list = request.POST["list"]
+            list_str = request.POST["list"]
         else:
             return JsonResponse({"msg": "no list"})
     else:
@@ -144,12 +144,25 @@ def change_features(request):
         return JsonResponse({"msg": "use get_average_face first"})
     average_face_path = request.session["average_face_path"]
 
-    # list = json.loads(list)
-    #
-    # gen_image = StarMain.get_generator(model_path="FaceGen/model/star_gen.npz")
-    # image = StarMain.Image.open(average_face_path)
-    # image = StarMain.preprocess_img(image)
-    #
-    # for i in range(5):
-    #     image = gen_image(image, list, "Test", name=i)
-    #     image = StarMain.transpose(image)
+    list = json.loads(list_str)
+
+    print("list_str:"+str(list))
+
+    gen_image = StarMain.get_generator(model_path="FaceGen/model/star_gen.npz")
+    image = StarMain.Image.open(average_face_path)
+    image = StarMain.preprocess_img(image)
+
+    pictures = []
+    paths = []
+
+    for i in range(5):
+        name = str(int(time.time()))
+        image = gen_image(image, list, FILE_PATH, name=name)
+        image = StarMain.transpose(image)
+        paths.append('image_{}_{}.png'.format(name, str(list)))
+        pictures.append(FILE_PATH + '\\' + paths[i])
+
+    print("result_img:"+paths[4])
+
+    data = {"image_path": paths[4]}
+    return HttpResponse(json.dumps(data))
