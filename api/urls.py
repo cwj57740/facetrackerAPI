@@ -6,4 +6,5 @@ urlpatterns = [
     url(r"^get_stick_pic/", get_stick_pic, name="get_stick_pic"),
     url(r"^get_average_face/", get_average_face, name="get_average_face"),
     url(r"^change_features/", change_features, name="change_features"),
+    url(r"^get_similar_face/", get_similar_face, name="get_similar_face"),
 ]

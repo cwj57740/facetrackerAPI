@@ -21,6 +21,15 @@ URL = 'https://api-cn.faceplusplus.com/facepp/v3/detect?api_key=%s&api_secret=%s
       'return_attributes=gender,age,eyestatus,emotion,ethnicity,beauty,skinstatus' \
       '&return_landmark=%d' \
       % (API_KEY, API_SECRET, 2)
+SEARCH_URL = 'https://api-cn.faceplusplus.com/facepp/v3/search'
+params = {
+    'api_key': API_KEY,
+    'api_secret': API_SECRET,
+    'faceset_token': 'db6d9ea50feea6b8ff17470b122c50cd',
+    'return_result_count': '3'
+}
+
+DATA_FILE = "data.txt"
 FILE_PATH = "E:\webroot"
 
 
@@ -164,6 +173,46 @@ def change_features(request):
         pictures.append(FILE_PATH + '\\' + paths[i])
 
     print("result_img:"+paths[4])
-
+    request.session["result_img"] = pictures[4]
     data = {"image_path": paths[4]}
     return HttpResponse(json.dumps(data))
+
+
+@csrf_exempt
+def get_similar_face(request):
+    # result_img = request.session["result_img"]
+    result_img = request.session["average_face_path"]
+    print("result_img:" + result_img)
+
+    i=0
+    while True:
+        files = {'image_file': open(result_img, 'rb')}
+        r = requests.post(SEARCH_URL, data=params, files=files).json()
+
+        if r is not None:
+            print(r)
+            print(r.get("results"))
+            if "results" in r:
+                results = r.get("results")
+                break
+        i += 1
+        if i > 10:
+            return JsonResponse({"msg": "timeout"})
+    pitures = []
+    for item in results:
+        if "face_token" in item:
+            face_token = item["face_token"]
+            pitures.append(get_pic_from_token(face_token))
+
+    data = {"pictures": pitures}
+    return HttpResponse(json.dumps(pitures))
+
+
+def get_pic_from_token(token):
+    path = FILE_PATH + "\\" + DATA_FILE
+    f = open(path)
+    lines = f.readlines()
+    for line in lines:
+        if token == line.split()[1]:
+            print(line.split()[1])
+            return line.split()[0]
