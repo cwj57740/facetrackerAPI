@@ -16,3 +16,4 @@
 | /api/get_base_features/ | img:图片           | post | landmark |
 | /api/get_stick_pic/     | json_str:json数据  | post | 简笔画图片|
 | /api/get_average_face/  |                    | get  | 平均脸图片|
+| /api/change_features/   | list:[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] | post | 平均脸图片|
