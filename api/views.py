@@ -3,6 +3,7 @@ import cv2
 import json
 import os
 import time
+import shutil
 
 import requests
 from django.http import HttpResponse
@@ -121,7 +122,10 @@ def get_stick_pic(request):
     # return HttpResponse(image_data, content_type="image/png")
 
     # 简笔画透明化
-    img = Image.open(stick_pic_path)
+    img_name = "trans-"+str(int(time.time())) + ext
+    transparent_stick_pic = os.path.join(FILE_PATH, img_name)
+    shutil.copy(stick_pic_path, transparent_stick_pic)
+    img = Image.open(transparent_stick_pic)
     img = img.convert("RGBA")
     data = img.getdata()
     new_Data = list()
@@ -130,8 +134,7 @@ def get_stick_pic(request):
             new_Data.append((255, 255, 255, 0))
         else:
             new_Data.append(item)
-    img_name = str(int(time.time())) + ext
-    transparent_stick_pic = os.path.join(FILE_PATH, img_name)
+
     img.putdata(new_Data)
     img.save(transparent_stick_pic, "PNG")
 
