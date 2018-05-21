@@ -204,23 +204,23 @@ def change_features(request):
     print("list_str:"+str(list))
 
     # StarGen处理
-    gen_image = StarMain.get_generator(model_path="FaceGen/model/star_gen.npz")
+    gen_image = StarMain.get_generator(model_path="FaceGen/model/star_gen.npz", att_num=5, image_size=128)
     image = StarMain.Image.open(average_face_path)
     image = StarMain.preprocess_img(image)
 
     pictures = []
     paths = []
 
-    for i in range(5):
+    for i in range(1):
         name = str(int(time.time()))
         image = gen_image(image, list, FILE_PATH, name=name)
         image = StarMain.transpose(image)
         paths.append('image_{}_{}.png'.format(name, str(list)))
         pictures.append(FILE_PATH + '\\' + paths[i])
 
-    print("result_img:"+paths[4])
-    request.session["result_img"] = pictures[4]
-    data = {"image_path": paths[4]}
+    print("result_img:"+paths[0])
+    request.session["result_img"] = pictures[0]
+    data = {"image_path": paths[0]}
     return HttpResponse(json.dumps(data))
 
 
