@@ -63,10 +63,24 @@ def get_base_features(request):
     file_name = img
     ext = ".png"
     img_path = os.path.join(FILE_PATH, file_name+ext)
+    json_path = os.path.join(FILE_PATH, file_name+".json")
     # destination = open(img_path, 'wb+')
     # for chunk in img.chunks():  # 分块写入文件
     #     destination.write(chunk)
     # destination.close()
+
+    if not os.path.exists(img_path):
+        return JsonResponse({"msg": "The img does not exist"})
+
+    # 将图片路径写入session
+    request.session["img_path"] = img_path
+
+    # 从json文件中读取json
+    if os.path.exists(json_path):
+        json_file = open(json_path, 'r')
+        json_str = json.load(json_file)
+        return HttpResponse(json_str)
+
     files = {'image_file': open(img_path, 'rb')}
     json_str = "null"
     t = 0
@@ -78,7 +92,10 @@ def get_base_features(request):
         if t >= 10:
             return JsonResponse({"msg": "timeout"})
 
-    request.session["img_path"] = img_path
+    # 将json写入json文件
+    json_file = open(json_path, 'w')
+    json_file.write(json_str)
+    json_file.close()
 
     return HttpResponse(json_str)
 
