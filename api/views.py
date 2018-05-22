@@ -78,7 +78,7 @@ def get_base_features(request):
     # 从json文件中读取json
     if os.path.exists(json_path):
         json_file = open(json_path, 'r')
-        json_str = json.load(json_file)
+        json_str = json_file.read()
         return HttpResponse(json_str)
 
     files = {'image_file': open(img_path, 'rb')}
