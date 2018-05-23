@@ -187,6 +187,8 @@ def get_average_face(request):
 
     request.session["average_face_path"] = average_face_path
 
+    request.session["result_img"] = average_face_path
+
     # image_data = open(average_face_path, "rb").read()
     # return HttpResponse(image_data, content_type="image/png")
 
