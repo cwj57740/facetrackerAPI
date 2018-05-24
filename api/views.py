@@ -41,7 +41,7 @@ params = {
 DATA_FILE = "data.txt"
 
 # 项目图片路径
-FILE_PATH = "E:\webroot"
+FILE_PATH = "E:/workplace/pythoncode/facetrackerAPI/api/static/pictures"
 
 
 @csrf_exempt
@@ -249,7 +249,7 @@ def get_similar_face(request):
     i=0
     while True:
         # face++ search api 调用
-        files = {'image_file': open(result_img, 'rb')}
+        files = {'image_file': open(FILE_PATH+"/"+result_img, 'rb')}
         r = requests.post(SEARCH_URL, data=params, files=files).json()
 
         if r is not None:
