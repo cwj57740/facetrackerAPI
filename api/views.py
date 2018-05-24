@@ -15,6 +15,7 @@ from PIL import Image
 from FaceGen import face_features
 from FaceGen import PixMain
 from FaceGen import StarMain
+from FaceGen import star_main
 
 # face++ api_key与api_secret
 API_KEY = 'WRg5cwms3We9MiZV9CHaJZH53kc30VFI'
@@ -223,23 +224,14 @@ def change_features(request):
     print("list_str:"+str(list))
 
     # StarGen处理
-    gen_image = StarMain.get_generator(model_path="FaceGen/model/star_gen.npz", att_num=5, image_size=128)
-    image = StarMain.Image.open(average_face_path)
-    image = StarMain.preprocess_img(image)
+    gen_image = star_main.get_generator(model_path="FaceGen/model/star_gan.ckpt", crop_size=256, image_size=256)
+    image = star_main.Image.open(average_face_path)
 
-    pictures = []
-    paths = []
+    result_img = "star_"+str(int(time.time()))+".png"
+    image = gen_image(image, list, dst=FILE_PATH, name=result_img)
+    data = {"image_path": result_img}
+    request.session["result_img"] = result_img
 
-    for i in range(1):
-        name = str(int(time.time()))
-        image = gen_image(image, list, FILE_PATH, name=name)
-        image = StarMain.transpose(image)
-        paths.append('image_{}_{}.png'.format(name, str(list)))
-        pictures.append(FILE_PATH + '\\' + paths[i])
-
-    print("result_img:"+paths[0])
-    request.session["result_img"] = pictures[0]
-    data = {"image_path": paths[0]}
     return HttpResponse(json.dumps(data))
 
 
