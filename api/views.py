@@ -230,7 +230,7 @@ def change_features(request):
     result_img = "star_"+str(int(time.time()))+".png"
     image = gen_image(image, list, dst=FILE_PATH, name=result_img)
     data = {"image_path": result_img}
-    request.session["result_img"] = result_img
+    request.session["result_img"] = FILE_PATH+"/"+result_img
 
     return HttpResponse(json.dumps(data))
 
@@ -249,7 +249,7 @@ def get_similar_face(request):
     i=0
     while True:
         # face++ search api 调用
-        files = {'image_file': open(FILE_PATH+"/"+result_img, 'rb')}
+        files = {'image_file': open(result_img, 'rb')}
         r = requests.post(SEARCH_URL, data=params, files=files).json()
 
         if r is not None:
@@ -262,14 +262,18 @@ def get_similar_face(request):
         if i > 10:
             return JsonResponse({"msg": "timeout"})
     pitures = []
+    confidences = []
     # 获取图片路径
     for item in results:
         if "face_token" in item:
             face_token = item["face_token"]
             pitures.append(get_pic_from_token(face_token))
+        if "confidence" in item:
+            confidence = item["confidence"]
+            confidences.append(confidence)
 
-    data = {"pictures": pitures}
-    return HttpResponse(json.dumps(pitures))
+    data = {"pictures": pitures, "confidence": confidences}
+    return HttpResponse(json.dumps(data))
 
 
 def get_pic_from_token(token):
