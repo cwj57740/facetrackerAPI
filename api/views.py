@@ -34,7 +34,7 @@ params = {
     'api_key': API_KEY,
     'api_secret': API_SECRET,
     'faceset_token': 'db6d9ea50feea6b8ff17470b122c50cd',
-    'return_result_count': '3'
+    'return_result_count': '4'
 }
 
 # token与图片匹配数据文件
